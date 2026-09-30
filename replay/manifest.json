@@ -1,0 +1,9 @@
+{
+  "keys": {
+    "/data-api/v3/cryptocurrency/historical?convertId=2781&id=9001&timeEnd=1767571200&timeStart=1767139200": "fixtures/001.json",
+    "/data-api/v3/cryptocurrency/historical?convertId=2781&id=9001&timeEnd=1768003200&timeStart=1767571200": "fixtures/002.json",
+    "/data-api/v3/cryptocurrency/historical?convertId=2781&id=9001&timeEnd=1768176000&timeStart=1768003200": "fixtures/003.json",
+    "/data-api/v3/cryptocurrency/listing?audited=false&convert=USD&cryptoType=all&limit=5000&sortBy=market_cap&sortType=desc&start=1&tagType=all": "fixtures/000.json"
+  },
+  "version": 1
+}

@@ -1,0 +1,42 @@
+{
+  "data": {
+    "id": 9001,
+    "name": "HitFixtoken",
+    "quotes": [
+      {
+        "quote": {
+          "close": 161.0,
+          "high": 211.0,
+          "low": 11.0,
+          "marketCap": 900000000.0,
+          "open": 111.0,
+          "volume": 1000000.0
+        },
+        "timeClose": "2026-01-11T23:59:59.999Z",
+        "timeHigh": "2026-01-11T12:00:00.000Z",
+        "timeLow": "2026-01-11T06:00:00.000Z",
+        "timeOpen": "2026-01-11T00:00:00.000Z"
+      },
+      {
+        "quote": {
+          "close": 162.0,
+          "high": 212.0,
+          "low": 12.0,
+          "marketCap": 900000000.0,
+          "open": 112.0,
+          "volume": 1000000.0
+        },
+        "timeClose": "2026-01-12T23:59:59.999Z",
+        "timeHigh": "2026-01-12T12:00:00.000Z",
+        "timeLow": "2026-01-12T06:00:00.000Z",
+        "timeOpen": "2026-01-12T00:00:00.000Z"
+      }
+    ],
+    "symbol": "HIT"
+  },
+  "status": {
+    "error_code": 0,
+    "error_message": null,
+    "timestamp": "2026-01-12T00:00:00.000Z"
+  }
+}

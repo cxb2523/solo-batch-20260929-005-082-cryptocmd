@@ -1,0 +1,13 @@
+{
+  "data": {
+    "id": 9001,
+    "name": "HitFixtoken",
+    "quotes": [],
+    "symbol": "HIT"
+  },
+  "status": {
+    "error_code": 0,
+    "error_message": null,
+    "timestamp": "2026-01-12T00:00:00.000Z"
+  }
+}

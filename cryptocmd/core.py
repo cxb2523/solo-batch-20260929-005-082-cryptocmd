@@ -10,12 +10,18 @@ from __future__ import print_function
 
 __all__ = ["CmcScraper"]
 
-import os
 import csv
-import tablib
-import warnings
 from datetime import datetime
-from .utils import download_coin_data, InvalidParameters
+import os
+import warnings
+
+import tablib
+
+from .utils import (
+    InvalidParameters,
+    download_coin_data,
+    parse_iso_open,
+)
 
 
 class CmcScraper(object):
@@ -34,6 +40,8 @@ class CmcScraper(object):
         fiat="USD",
         coin_name=None,
         id_number=None,
+        fetcher=None,
+        max_workers=None,
     ):
         """
         :param coin_code: coin code of cryptocurrency e.g. btc. Will be ignored if using id_number.
@@ -47,6 +55,8 @@ class CmcScraper(object):
         :param coin_name: coin name in case of many coins with same code e.g. sol -> solana, solcoin
         :param id_number: id number for the a cryptocurrency on the coinmarketcap.com.
             Will override coin_code and coin_name when provided.
+        :param fetcher: 可注入取数协议（默认打真实接口；离线时指向本地回放服务）。
+        :param max_workers: 并发翻页线程数（透传给 download_coin_data）。
         """
 
         self.coin_code = coin_code
@@ -71,6 +81,8 @@ class CmcScraper(object):
         ]
         self.rows = []
         self.id_number = id_number
+        self.fetcher = fetcher
+        self.max_workers = max_workers
 
         # enable all_time download if start_time or end_time is not given
         if not (self.start_date and self.end_date):
@@ -110,13 +122,13 @@ class CmcScraper(object):
             self.fiat,
             self.coin_name,
             self.id_number,
+            fetcher=self.fetcher,
+            max_workers=self.max_workers,
         )
 
         for _row in coin_data["data"]["quotes"]:
             _row_quote = _row["quote"]
-            date = datetime.strptime(
-                _row["timeOpen"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ).strftime("%d-%m-%Y")
+            date = parse_iso_open(_row["timeOpen"]).strftime("%d-%m-%Y")
 
             row = [
                 date,

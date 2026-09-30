@@ -49,6 +49,9 @@ packages = ["cryptocmd"]
 [tool.hatch.build.targets.sdist]
 include = [
     "cryptocmd/",
+    "scripts/",
+    "replay/",
+    "Makefile",
     "LICENSE",
     "README.md",
 ]

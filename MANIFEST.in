@@ -4,3 +4,7 @@ include pyproject.toml
 include poetry.lock
 
 global-exclude *.py[cdo] __pycache__ *.so *.pyd
+
+include Makefile
+recursive-include replay *.json
+recursive-include scripts *.py

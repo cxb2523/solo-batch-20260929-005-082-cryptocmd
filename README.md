@@ -99,6 +99,27 @@ The data is being scrapped from
 
 ## Contributing
 
+## Offline replay gate
+
+All HTTP traffic goes through a single injectable `fetcher` protocol
+(`cryptocmd/utils.py`). The default fetcher hits the live CoinMarketCap API;
+setting `CRYPTOCMD_API_BASE` redirects every request to a local replay server
+without touching business code. Replay fixtures and the client cache share one
+request fingerprint: URL path + sorted query params (`request_key`), so a page
+window `(timeStart, timeEnd)` always maps to exactly one fixture and one cache
+entry, including under concurrent paging.
+
+- `python scripts/check_fiat_ids.py` - standalone structural/duplicate check
+  for `cryptocmd/fiat_ids.json` (`make check-fiat-ids`).
+- `python scripts/replay/generate_fixtures.py` - regenerate fixtures for the
+  full-page / empty-page / short-last-page boundary scenario.
+- `python scripts/replay/server.py` - replay proxy with a refreshable status
+  page at `/__replay/status` (hits, misses, retries, per-page interval).
+- `make offline-gate` - unplugged end-to-end check: blocks all non-loopback
+  sockets, exercises both the miss path (503 -> retries -> `FetchError`) and
+  the hit path, then verifies status-page counts and the last-page interval.
+  The scraper also accepts `fetcher=` / `max_workers=` directly for tests.
+
 Feel free to make a pull request! :octocat:
 
 If you found this useful, I\'d appreciate your consideration in the

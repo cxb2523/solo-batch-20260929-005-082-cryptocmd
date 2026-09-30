@@ -111,3 +111,6 @@ ENV/
 
 # Generated CSV output from examples / tests
 *.csv
+
+# local replay artifacts
+replay/status_snapshot.html

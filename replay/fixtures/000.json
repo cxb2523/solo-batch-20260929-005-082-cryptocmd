@@ -1,0 +1,15 @@
+{
+  "data": {
+    "cryptoCurrencyList": [
+      {
+        "id": 9001,
+        "name": "HitFixtoken",
+        "symbol": "HIT"
+      }
+    ]
+  },
+  "status": {
+    "error_code": 0,
+    "error_message": null
+  }
+}
