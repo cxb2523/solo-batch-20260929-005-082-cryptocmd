@@ -1,0 +1,68 @@
+[project]
+name = "cryptocmd"
+version = "0.6.5"
+description = "Cryptocurrency historical market price data scrapper."
+authors = [{ name = "Rohit Gupta", email = "rohitgtech+git@gmail.com" }]
+license = { text = "BSD-3-Clause" }
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["cryptocurrency", "cryptocurrency historical data", "coinmarketcap", "dataset", "historical cryptocurrency prices"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Utilities",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: BSD License",
+]
+dependencies = [
+    "requests",
+    "tablib",
+    "setuptools; python_version >= '3.12'",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas"]
+
+[project.urls]
+Homepage = "https://github.com/guptarohit/cryptoCMD"
+Repository = "https://github.com/guptarohit/cryptoCMD"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.3.5,<0.5.0",
+    "pre-commit",
+    "pytest>=8.4.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["cryptocmd"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "cryptocmd/",
+    "LICENSE",
+    "README.md",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests that make live network calls",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint.mccabe]
+max-complexity = 18
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
