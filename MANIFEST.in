@@ -3,4 +3,10 @@ include LICENSE
 include pyproject.toml
 include poetry.lock
 
+# offline replay tooling
+recursive-include replay *.py *.json
+recursive-include scripts *.py
+include Makefile
+
 global-exclude *.py[cdo] __pycache__ *.so *.pyd
+global-exclude replay/server.log

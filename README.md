@@ -91,6 +91,32 @@ df = scraper.get_dataframe()
 
 `Date, Open, High, Low, Close, Volume, Market Cap, Time Open, Time High, Time Low, Time Close`
 
+## Offline development (replay proxy)
+
+All HTTP egress goes through an injectable fetcher
+(`cryptocmd.fetching`). The default fetcher still hits the live
+CoinMarketCap API; for offline work you point the same stack at a local
+replay proxy that serves prerecorded fixtures, keyed by URL path plus
+canonicalised query parameters (the same identity the response cache
+uses, so concurrent pages can never collide).
+
+```bash
+make fixtures        # regenerate deterministic fixtures (no network)
+make replay-server   # serve them; status page at http://127.0.0.1:8877/__status
+make offline-gate    # with the cable unplugged: hit, miss and retry paths
+make check-fiat      # standalone fiat_ids.json structure/duplicate check
+```
+
+The status page auto-refreshes and shows per-page hit/miss/retry
+counts, the current page interval (`timeStart..timeEnd`) and the empty
+last page. You can also point any scraper at the proxy explicitly:
+
+```python
+from cryptocmd.fetching import build_default_fetcher
+fetcher = build_default_fetcher(base_url="http://127.0.0.1:8877")
+scraper = CmcScraper("BTC", "01-01-2023", "11-01-2025", fetcher=fetcher)
+```
+
 ## Acknowledgements
 
 The data is being scrapped from

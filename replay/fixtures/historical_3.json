@@ -1,0 +1,13 @@
+{
+  "status": {
+    "error_code": 0,
+    "error_message": null,
+    "timestamp": "2025-01-05T00:00:00.000Z"
+  },
+  "data": {
+    "id": 1,
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "quotes": []
+  }
+}

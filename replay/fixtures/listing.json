@@ -1,0 +1,15 @@
+{
+  "status": {
+    "error_code": 0,
+    "error_message": null
+  },
+  "data": {
+    "cryptoCurrencyList": [
+      {
+        "id": 1,
+        "symbol": "BTC",
+        "name": "Bitcoin"
+      }
+    ]
+  }
+}

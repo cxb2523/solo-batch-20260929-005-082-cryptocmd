@@ -1,0 +1,6 @@
+{
+  "/data-api/v3/cryptocurrency/historical?convertId=2781&id=1&timeEnd=1703980800&timeStart=1672444800": "historical_1.json",
+  "/data-api/v3/cryptocurrency/historical?convertId=2781&id=1&timeEnd=1735516800&timeStart=1703980800": "historical_2.json",
+  "/data-api/v3/cryptocurrency/historical?convertId=2781&id=1&timeEnd=1736553600&timeStart=1735516800": "historical_3.json",
+  "/data-api/v3/cryptocurrency/listing?audited=false&convert=USD&cryptoType=all&limit=5000&sortBy=market_cap&sortType=desc&start=1&tagType=all": "listing.json"
+}

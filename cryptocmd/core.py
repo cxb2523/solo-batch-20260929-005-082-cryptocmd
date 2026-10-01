@@ -15,7 +15,7 @@ import csv
 import tablib
 import warnings
 from datetime import datetime
-from .utils import download_coin_data, InvalidParameters
+from .utils import download_coin_data, parse_quote_date, InvalidParameters
 
 
 class CmcScraper(object):
@@ -34,6 +34,7 @@ class CmcScraper(object):
         fiat="USD",
         coin_name=None,
         id_number=None,
+        fetcher=None,
     ):
         """
         :param coin_code: coin code of cryptocurrency e.g. btc. Will be ignored if using id_number.
@@ -47,6 +48,9 @@ class CmcScraper(object):
         :param coin_name: coin name in case of many coins with same code e.g. sol -> solana, solcoin
         :param id_number: id number for the a cryptocurrency on the coinmarketcap.com.
             Will override coin_code and coin_name when provided.
+        :param fetcher: injectable fetcher. Defaults to the live CoinMarketCap
+            API; for offline runs pass a fetcher pointed at the local replay
+            proxy (see cryptocmd.fetching.build_default_fetcher).
         """
 
         self.coin_code = coin_code
@@ -71,6 +75,7 @@ class CmcScraper(object):
         ]
         self.rows = []
         self.id_number = id_number
+        self.fetcher = fetcher
 
         # enable all_time download if start_time or end_time is not given
         if not (self.start_date and self.end_date):
@@ -110,13 +115,12 @@ class CmcScraper(object):
             self.fiat,
             self.coin_name,
             self.id_number,
+            fetcher=self.fetcher,
         )
 
         for _row in coin_data["data"]["quotes"]:
             _row_quote = _row["quote"]
-            date = datetime.strptime(
-                _row["timeOpen"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ).strftime("%d-%m-%Y")
+            date = parse_quote_date(_row["timeOpen"])
 
             row = [
                 date,

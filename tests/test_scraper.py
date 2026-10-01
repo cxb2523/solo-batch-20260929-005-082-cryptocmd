@@ -88,7 +88,8 @@ class TestDefaultEndDate:
                 )
             return _mock_get_url_data(_make_response([_make_quote("2026-04-25")]))
 
-        with patch("cryptocmd.utils.get_url_data", side_effect=fake_get_url_data):
+        with patch("cryptocmd.utils.build_default_fetcher",
+                   side_effect=lambda *a, **k: fake_get_url_data):
             download_coin_data("BTC", None, None, "USD", None)
 
         # The default range spans many years so chunking produces multiple requests.
@@ -102,9 +103,13 @@ class TestDefaultEndDate:
             .timestamp()
         )
 
-        last_url = historical_urls[-1]
-        params = dict(p.split("=") for p in last_url.split("?")[1].split("&"))
-        time_end = int(params["timeEnd"])
+        # Pages are fetched concurrently, so inspect every page rather
+        # than assuming captured_urls[-1] is the last slice.
+        time_ends = [
+            int(dict(p.split("=") for p in u.split("?")[1].split("&"))["timeEnd"])
+            for u in historical_urls
+        ]
+        time_end = max(time_ends)
         assert time_end >= today_midnight, (
             f"Last chunk timeEnd ({time_end}) is before today midnight ({today_midnight}). "
             "Default end_date should be today, not yesterday."
@@ -136,13 +141,16 @@ class TestDefaultEndDate:
                 )
             return _mock_get_url_data(_make_response([_make_quote("2026-04-25")]))
 
-        with patch("cryptocmd.utils.get_url_data", side_effect=fake_get_url_data):
+        with patch("cryptocmd.utils.build_default_fetcher",
+                   side_effect=lambda *a, **k: fake_get_url_data):
             download_coin_data("BTC", None, None, "USD", None)
 
         historical_urls = [u for u in captured_urls if "historical" in u]
-        last_url = historical_urls[-1]
-        params = dict(p.split("=") for p in last_url.split("?")[1].split("&"))
-        time_end = int(params["timeEnd"])
+        time_ends = [
+            int(dict(p.split("=") for p in u.split("?")[1].split("&"))["timeEnd"])
+            for u in historical_urls
+        ]
+        time_end = max(time_ends)
         assert time_end > yesterday_eod, (
             "Last chunk timeEnd is end-of-yesterday — default end_date is still using "
             "old yesterday offset. Expected today."
@@ -168,7 +176,8 @@ class TestDefaultEndDate:
                 )
             return _mock_get_url_data(_make_response([_make_quote("2024-01-01")]))
 
-        with patch("cryptocmd.utils.get_url_data", side_effect=fake_get_url_data):
+        with patch("cryptocmd.utils.build_default_fetcher",
+                   side_effect=lambda *a, **k: fake_get_url_data):
             download_coin_data("BTC", "01-12-2023", explicit_end, "USD", None)
 
         historical_urls = [u for u in captured_urls if "historical" in u]
@@ -200,8 +209,9 @@ class TestCmcScraperInit:
         quotes = [_make_quote("2026-04-25"), _make_quote("2026-04-24")]
         response = _make_response(quotes)
 
-        with patch("cryptocmd.utils.get_url_data") as mock_get:
-            mock_get.return_value = _mock_get_url_data(response)
+        fake = lambda url: _mock_get_url_data(response)
+        with patch("cryptocmd.utils.build_default_fetcher",
+                   side_effect=lambda *a, **k: fake):
             scraper = CmcScraper("BTC", all_time=True, id_number=1)
             scraper._download_data()
 
@@ -213,10 +223,10 @@ class TestCmcScraperInit:
         quotes = [_make_quote("2026-04-25")]
         response = _make_response(quotes)
 
-        with patch("cryptocmd.utils.get_url_data") as mock_get:
-            mock_get.return_value = _mock_get_url_data(response)
-            scraper = CmcScraper("BTC", "24-04-2026", "25-04-2026", id_number=1)
-            headers, rows = scraper.get_data()
+        fake = lambda url: _mock_get_url_data(response)
+        scraper = CmcScraper("BTC", "24-04-2026", "25-04-2026", id_number=1,
+                             fetcher=fake)
+        headers, rows = scraper.get_data()
 
         assert headers == [
             "Date",
@@ -242,16 +252,16 @@ class TestCmcScraperInit:
         quotes = [_make_quote("2026-04-25"), _make_quote("2026-04-24")]
         response = _make_response(quotes)
 
-        with patch("cryptocmd.utils.get_url_data") as mock_get:
-            mock_get.return_value = _mock_get_url_data(response)
-            scraper = CmcScraper(
-                "BTC",
-                "24-04-2026",
-                "25-04-2026",
-                order_ascending=True,
-                id_number=1,
-            )
-            _, rows = scraper.get_data()
+        fake = lambda url: _mock_get_url_data(response)
+        scraper = CmcScraper(
+            "BTC",
+            "24-04-2026",
+            "25-04-2026",
+            order_ascending=True,
+            id_number=1,
+            fetcher=fake,
+        )
+        _, rows = scraper.get_data()
 
         assert rows[0][0] == "24-04-2026"
         assert rows[1][0] == "25-04-2026"
@@ -261,10 +271,10 @@ class TestCmcScraperInit:
         quotes = [_make_quote("2026-04-24"), _make_quote("2026-04-25")]
         response = _make_response(quotes)
 
-        with patch("cryptocmd.utils.get_url_data") as mock_get:
-            mock_get.return_value = _mock_get_url_data(response)
-            scraper = CmcScraper("BTC", "24-04-2026", "25-04-2026", id_number=1)
-            _, rows = scraper.get_data()
+        fake = lambda url: _mock_get_url_data(response)
+        scraper = CmcScraper("BTC", "24-04-2026", "25-04-2026", id_number=1,
+                             fetcher=fake)
+        _, rows = scraper.get_data()
 
         assert rows[0][0] == "25-04-2026"
         assert rows[1][0] == "24-04-2026"
